@@ -4,6 +4,8 @@ import at.ac.fhcampuswien.newsapi.NewsApi;
 import at.ac.fhcampuswien.newsapi.beans.Article;
 import at.ac.fhcampuswien.newsapi.beans.NewsResponse;
 import at.ac.fhcampuswien.newsapi.beans.Source;
+
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -84,4 +86,16 @@ public class Controller {
 				.map(stringListEntry -> stringListEntry.getKey() + " " + stringListEntry.getValue().size())
 				.orElseThrow();
 	}
+
+	public List<String> getAllUrls() throws NewsAPIException {
+		if (articles == null)
+			throw new NewsAPIException("Load data first");
+		List<String> urlList = new ArrayList<>();
+		urlList = articles.stream()
+				.map(Article::getUrl)
+				.collect(Collectors.toList());
+
+		return urlList;
+	}
 }
+

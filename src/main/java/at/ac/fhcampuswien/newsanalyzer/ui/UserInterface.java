@@ -3,6 +3,9 @@ package at.ac.fhcampuswien.newsanalyzer.ui;
 
 import at.ac.fhcampuswien.newsanalyzer.ctrl.Controller;
 import at.ac.fhcampuswien.newsanalyzer.ctrl.NewsAPIException;
+import at.ac.fhcampuswien.newsanalyzer.downloader.Downloader;
+import at.ac.fhcampuswien.newsanalyzer.downloader.ParallelDownloader;
+import at.ac.fhcampuswien.newsanalyzer.downloader.SequentialDownloader;
 import at.ac.fhcampuswien.newsapi.NewsApi;
 import at.ac.fhcampuswien.newsapi.NewsApiBuilder;
 import at.ac.fhcampuswien.newsapi.enums.Country;
@@ -11,6 +14,7 @@ import at.ac.fhcampuswien.newsapi.enums.Endpoint;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 
 public class UserInterface {
 
@@ -47,9 +51,8 @@ public class UserInterface {
 		menu.insert("x", "Shortest author name", this::getShortestNameOfAuthors);	// Exercise 3
 		menu.insert("y", "Get article count", this::getArticleCount);	// Exercise 3
 		menu.insert("z", "Sort by longest title", this::getSortArticlesByLongestTitle); // Exercise 3
-		menu.insert("g", "Download URLs", () -> {
-			//Todo
-		});
+		menu.insert("g", "Download URLs sequential", this::getLastDownload);
+		menu.insert("h", "Download URLs parallel", this::getLastDownload2);
 		menu.insert("q", "Quit", null);
 		Runnable choice;
 		while ((choice = menu.exec()) != null) {
@@ -201,6 +204,35 @@ public class UserInterface {
 		}
 
 		System.out.println(result);
+	}
+
+	protected void getLastDownload(){
+		try {
+			List<String> result = ctrl.getAllUrls();
+			Downloader downloader = new SequentialDownloader();
+
+			downloader.process(result);
+
+		} catch (NewsAPIException e) {
+			System.out.println("Please load data first!");
+		} catch (Exception e){
+			System.out.println(e.getMessage());
+		}
+
+	}
+	protected void getLastDownload2(){
+		try {
+			List<String> result = ctrl.getAllUrls();
+
+			Downloader downloader = new ParallelDownloader();
+
+			downloader.process(result);
+		} catch (NewsAPIException e) {
+			System.out.println("Please load data first!");
+		} catch (Exception e){
+			System.out.println(e.getMessage());
+		}
+
 	}
 
 }
